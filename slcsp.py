@@ -17,15 +17,51 @@
 def get_rate_areas(file_path):
     """ Returns dictionary of ZIP codes and their state, rate area tuples. """
 
-    zipcodes = {}
+    zip_codes = {}
 
     with open(file_path) as file:
         lines = file.readlines()
 
     for line in lines:
-        zipcode, state, _, _, rate_area = line.strip().split(',')
-        zipcodes[zipcode] = zipcodes.get(zipcode, [])
-        zipcodes[zipcode].append((state, rate_area))
+        zip_code, state, _, _, rate_area = line.strip().split(',')
+        zip_codes[zip_code] = zip_codes.get(zip_code, [])
+        zip_codes[zip_code].append((state, rate_area))
 
-    return zipcodes
+    return zip_codes
 
+
+def get_silver_rates(file_path):
+    """ Returns dictionary of state, rate areas and their silver plan rates. """
+
+    rates = {}
+
+    with open(file_path) as file:
+        lines = file.readlines()
+
+    for line in lines:
+        _, state, metal, rate, rate_area = line.strip().split(',')
+        # Only grab Silver plan rates
+        if metal.lower() != 'silver':
+            continue
+        rates[(state, rate_area)] = rates.get((state, rate_area), [])
+        rates[(state, rate_area)].append(int(rate))
+
+    return rates
+
+
+def fill_slcsp_for_zip(file_path, zip_codes, rates):
+    """ Replaces ZIP codes-only CSV file with a CSV file containing ZIP codes
+        and their corresponding SLCSP values.
+
+        Example code for making a temporary file and replacing another file with
+        it from StackOverflow: https://stackoverflow.com/a/39110
+
+    """
+
+    with open(file_path) as file:
+        lines
+
+
+
+    temp, abs_path = mkstemp()
+    with fdopen(temp, 'w') as new_file:
