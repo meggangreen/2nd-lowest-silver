@@ -165,9 +165,9 @@ if __name__ == '__main__':
     if has_all_files(file_names):
         slcsp_csv, zips_csv, plans_csv = file_names
         replace_empty_slcsp_file_with_full(slcsp_csv, zips_csv, plans_csv)
-        print("\n\nProcess complete. Please check '{}'.".format(slcsp_csv))
+        print("\nProcess complete. Please check '{}'.\n".format(slcsp_csv))
     else:
-        print("\n\nEnsure the necessary files are in the program folder.")
+        print("\nEnsure the necessary files are in the program folder.")
         for f_name in file_names:
             print(f_name)
         print("\n")
