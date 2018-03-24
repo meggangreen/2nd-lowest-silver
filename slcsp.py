@@ -19,8 +19,8 @@ def get_rate_areas(file_path):
 
     zip_codes = {}
 
-    with open(file_path) as file:
-        lines = file.readlines()
+    with open(file_path) as text:
+        lines = text.readlines()
 
     for line in lines:
         zip_code, state, _, _, rate_area = line.strip().split(',')
@@ -31,25 +31,51 @@ def get_rate_areas(file_path):
 
 
 def get_silver_rates(file_path):
-    """ Returns dictionary of state, rate areas and their silver plan rates. """
+    """ Returns dictionary of state, rate areas and their sorted list of silver
+        plan rates.
 
-    rates = {}
+    """
 
-    with open(file_path) as file:
-        lines = file.readlines()
+    plan_rates = {}
+
+    with open(file_path) as text:
+        lines = text.readlines()
 
     for line in lines:
         _, state, metal, rate, rate_area = line.strip().split(',')
-        # Only grab Silver plan rates
+        # Only grab Silver plan plan_rates
         if metal.lower() != 'silver':
             continue
-        rates[(state, rate_area)] = rates.get((state, rate_area), [])
-        rates[(state, rate_area)].append(int(rate))
+        plan_rates[(state, rate_area)] = plan_rates.get((state, rate_area), [])
+        plan_rates[(state, rate_area)].append(int(rate))
 
-    return rates
+    plan_rates = {area: sorted(rates) for area, rates in plans.items()}
+
+    return plan_rates
 
 
-def fill_slcsp_for_zip(file_path, zip_codes, rates):
+def get_slcsp(plan_rates):
+    """ Returns dictionary of state, rate areas and the second-lowest rate. """
+
+    slcsp_rates = {}
+
+    for rate_area, rates in plan_rates.items():
+        # Skip if rate area has no plan rates
+        if len(rates) < 1:
+            continue
+        elif len(rates) == 1:
+            slcsp_rates[rate_area] = rates[0]
+        else:
+            # Get second-lowest rate
+            for j in range(len(rates)):
+                if rates[j+1] > rates[j]:
+                    slcsp_rates[rate_area] = rates[j+1]
+                    break
+
+    return slcsp_rates
+
+
+def fill_slcsp_for_zip(file_path, zip_codes, slcsp_rates):
     """ Replaces ZIP codes-only CSV file with a CSV file containing ZIP codes
         and their corresponding SLCSP values.
 
@@ -58,10 +84,31 @@ def fill_slcsp_for_zip(file_path, zip_codes, rates):
 
     """
 
-    with open(file_path) as file:
-        lines
+    # Make a list of the ZIP codes to look up
+    with open(file_path) as text:
+        lookup_zips = [line.strip() for line in text.readlines()]
+    if len(lookup_zips) < 1:
+        return None
+
+    # Assuming each ZIP code in lookup_zips is now '00000,',
+    # look up each one and get its rate
+    for i in range(len(lookup_zips)):
+        # Skip if ZIP not found OR if ZIP has more than one rate area
+        zip_code = lookup_zips[i][:-1]
+        if len(zip_codes.get(zip_code, [])) != 1:
+            continue
+        rate_area = zip_codes[zip_code][0]
+
+        lookup_zips[i] += slcsp_rates.get(str(rate_area), "")
 
 
-
+    # Make temporary file and write to it
     temp, abs_path = mkstemp()
     with fdopen(temp, 'w') as new_file:
+            new_file.write(zip_code + ',' + slcsp)
+
+    # Remove original file
+    remove(file_path)
+
+    # Move temp file to orignal file location
+    move(abs_path, file_path)
