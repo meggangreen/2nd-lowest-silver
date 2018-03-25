@@ -8,7 +8,7 @@ import dataset
 def setUpModule():
     """ Create dummy files (similar to a test database). """
 
-    dataset.create_test_data()
+    dataset.create_test_dataset()
 
 
 def tearDownModule():
@@ -19,15 +19,16 @@ def tearDownModule():
 
 
 class MainFunctionTests(UT.TestCase):
+    """ This is not good testing; it does not even qualify as unit testing. """
 
     def test_all_functions(self):
         unittest_files = tuple(dataset.test_files)
         if has_all_files(unittest_files):
-        slcsp_csv, zips_csv, plans_csv = unittest_files
-        replace_empty_slcsp_file_with_full(slcsp_csv, zips_csv, plans_csv)
-        with open(slcsp_csv) as results_file:
-            unittest_results = results_file.readlines
-        self.assertEqual(unittest_results, dataset.results)
+            slcsp_csv, zips_csv, plans_csv = unittest_files
+            replace_empty_slcsp_file_with_full(slcsp_csv, zips_csv, plans_csv)
+            with open(slcsp_csv) as results_file:
+                unittest_results = results_file.readlines()
+            self.assertEqual(unittest_results, dataset.results)
 
 
 ################################################################################
