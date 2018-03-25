@@ -23,7 +23,7 @@ def get_file_lines(file_path):
     """ Returns lines of text from file. """
 
     with open(file_path) as text:
-        lines = text.readlines()
+        lines = [line.strip() for line in text.readlines()]
 
     return lines
 
@@ -36,7 +36,9 @@ def get_rate_areas(zips_csv):
     lines = get_file_lines(zips_csv)
 
     for line in lines:
-        zip_code, state, _, _, rate_area = line.strip().split(',')
+        if not line:
+            continue
+        zip_code, state, _, _, rate_area = line.split(',')
         rate_areas[zip_code] = rate_areas.get(zip_code, set([]))
         rate_areas[zip_code].add((state, rate_area))
 
@@ -54,7 +56,9 @@ def get_silver_rates(plans_csv):
     lines = get_file_lines(plans_csv)
 
     for line in lines:
-        _, state, metal, rate, rate_area = line.strip().split(',')
+        if not line:
+            continue
+        _, state, metal, rate, rate_area = line.split(',')
         # Only grab Silver plan silver_rates
         if metal.lower() != 'silver':
             continue
@@ -92,13 +96,15 @@ def get_slcsp_for_zip(slcsp_csv, rate_areas, slcsp_rates):
 
 
     # Make a list of the ZIP codes to look up
-    zips_slcsp = [line.strip() for line in get_file_lines(slcsp_csv)]
+    zips_slcsp = get_file_lines(slcsp_csv)
     if len(zips_slcsp) < 1:
         return None
 
     # Assuming each ZIP code in zips_slcsp is now '00000,',
     # look up each one and get its rate
     for i in range(len(zips_slcsp)):
+        if not zips_slcsp[i]:
+            continue
         # Skip if ZIP not found OR if ZIP has more than one rate area
         zip_code = zips_slcsp[i][:-1]
         if len(rate_areas.get(zip_code, [])) != 1:
