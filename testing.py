@@ -20,7 +20,14 @@ def tearDownModule():
 
 class MainFunctionTests(UT.TestCase):
 
-    def test_
+    def test_all_functions(self):
+        unittest_files = tuple(dataset.test_files)
+        if has_all_files(unittest_files):
+        slcsp_csv, zips_csv, plans_csv = unittest_files
+        replace_empty_slcsp_file_with_full(slcsp_csv, zips_csv, plans_csv)
+        with open(slcsp_csv) as results_file:
+            unittest_results = results_file.readlines
+        self.assertEqual(unittest_results, dataset.results)
 
 
 ################################################################################
