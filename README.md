@@ -48,8 +48,8 @@ example, NY 1, IL 14.
 
 There are two additional CSV files in this directory besides `slcsp.csv`:
 
-  * `plans.csv` -- all the health plans in the U.S. on the marketplace
-  * `zips.csv` -- a mapping of ZIP Code to county/counties & rate area(s)
+* `plans.csv` -- all the health plans in the U.S. on the marketplace
+* `zips.csv` -- a mapping of ZIP Code to county/counties & rate area(s)
 
 A ZIP Code can potentially be in more than one county. If the county can not be
 determined definitively by the ZIP Code, it may still be possible to determine
